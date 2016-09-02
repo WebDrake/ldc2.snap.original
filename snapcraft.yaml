@@ -1,0 +1,58 @@
+name: ldc2
+version: "1.1.0-beta6"
+summary: D compiler with LLVM backend
+description: |
+    LDC is a portable compiler for the D programming Language, with
+    modern optimization and code generation capabilities.  It uses
+    the official DMD compiler frontend to support the latest version
+    of D2, and uses the LLVM Core libraries for code generation.
+confinement: strict
+grade: devel
+
+apps:
+  ldc2:
+    command: ldc2
+    plugs: [home]
+  ldmd2:
+    command: ldmd2
+    plugs: [home]
+  ldc-profdata:
+    command: ldc-profdata
+    plugs: [home]
+
+parts:
+  ldc:
+    source: git://github.com/ldc-developers/ldc.git
+    source-tag: v1.1.0-beta6
+    plugin: cmake
+    stage:
+    - -etc/ldc2.conf
+    build-packages:
+    - build-essential
+    - ldc
+    - llvm-dev
+    - libconfig++-dev
+    - libedit-dev
+    - zlib1g-dev
+  ldc-config:
+    plugin: dump
+    source: ldc-config
+    organize:
+      ldc2.conf: etc/ldc2.conf
+
+  gcc:
+    plugin: nil
+    stage-packages: [gcc]
+    organize:
+      usr/bin/gcc: usr/bin/gcc.real
+  gcc-wrapper:
+    plugin: dump
+    source: gcc-wrapper
+    organize:
+      gcc.wrapper: usr/bin/gcc
+  libc6:
+    plugin: nil
+    stage-packages: [libc6]
+  libc6-dev:
+    plugin: nil
+    stage-packages: [libc6-dev]
